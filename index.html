@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>清明河畔 · Qingming Riverside</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Loading Screen -->
+      <div id="loading-screen" class="screen">
+        <div class="loading-content">
+          <h1 class="game-title">清明河畔</h1>
+          <p class="game-subtitle">Qingming Riverside</p>
+          <div class="loading-bar-track"><div id="loading-bar-fill" class="loading-bar-fill"></div></div>
+          <p id="loading-text" class="loading-text">正在建構古城 / Building the ancient city…</p>
+        </div>
+      </div>
+
+      <!-- Main Menu -->
+      <div id="main-menu" class="screen hidden">
+        <div class="menu-panel">
+          <h1 class="game-title">清明河畔</h1>
+          <p class="game-subtitle">Qingming Riverside — A Living Ancient Chinese City</p>
+          <div class="menu-buttons">
+            <button id="btn-new-game" class="btn btn-primary">開始新遊戲 New Game</button>
+            <button id="btn-continue" class="btn">繼續遊戲 Continue</button>
+            <button id="btn-settings" class="btn">設定 Settings</button>
+            <button id="btn-reset" class="btn btn-danger">重置進度 Reset Progress</button>
+          </div>
+          <p class="menu-footnote">教育性歷史詮釋，非精確復原 — Educational interpretation, not an exact historical reconstruction.</p>
+          <p class="menu-footnote">桌面：WASD 移動 · 滑鼠視角 · Shift 奔跑 · E 互動 · I 背包 · Q 任務 · Esc 暫停</p>
+        </div>
+      </div>
+
+      <!-- Orientation warning -->
+      <div id="orientation-warning" class="screen hidden">
+        <div class="menu-panel">
+          <p class="game-subtitle">請將裝置橫向持拿</p>
+          <p class="game-subtitle">Please rotate your device to landscape</p>
+        </div>
+      </div>
+
+      <!-- Game Canvas -->
+      <canvas id="game-canvas"></canvas>
+
+      <!-- HUD -->
+      <div id="hud" class="screen hidden">
+        <div id="crosshair"></div>
+        <div id="interaction-prompt" class="hidden">
+          <div id="interaction-name"></div>
+          <div id="interaction-hint">按 E 互動 / Press E</div>
+        </div>
+        <div id="objective-tracker">
+          <div id="objective-title">目前任務 / Current Objective</div>
+          <div id="objective-text">—</div>
+        </div>
+        <div id="subtitle-box" class="hidden"></div>
+        <div id="notification-area"></div>
+
+        <button id="btn-hud-inventory" class="hud-icon-btn" title="Inventory (I)">🎒</button>
+        <button id="btn-hud-quest" class="hud-icon-btn" title="Quests (Q)">📜</button>
+        <button id="btn-hud-pause" class="hud-icon-btn" title="Pause (Esc)">⏸</button>
+      </div>
+
+      <!-- Dialogue Panel -->
+      <div id="dialogue-panel" class="screen hidden">
+        <div class="dialogue-box">
+          <div id="dialogue-name" class="dialogue-name"></div>
+          <div id="dialogue-text" class="dialogue-text"></div>
+          <div id="dialogue-options" class="dialogue-options"></div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div id="inventory-panel" class="screen hidden">
+        <div class="panel-box">
+          <h2>背包 Inventory</h2>
+          <div id="inventory-grid" class="inventory-grid"></div>
+          <div id="inventory-detail" class="inventory-detail hidden">
+            <div id="inv-detail-name"></div>
+            <div id="inv-detail-desc"></div>
+          </div>
+          <button class="btn close-btn" data-close="inventory-panel">關閉 Close (I)</button>
+        </div>
+      </div>
+
+      <!-- Quest Log -->
+      <div id="quest-panel" class="screen hidden">
+        <div class="panel-box">
+          <h2>任務日誌 Quest Log</h2>
+          <div id="quest-list" class="quest-list"></div>
+          <button class="btn close-btn" data-close="quest-panel">關閉 Close (Q)</button>
+        </div>
+      </div>
+
+      <!-- History Card -->
+      <div id="history-panel" class="screen hidden">
+        <div class="panel-box history-box">
+          <h2 id="history-title">歷史小知識 Historical Note</h2>
+          <div id="history-text"></div>
+          <p class="menu-footnote">教育性詮釋，非精確歷史復原。Educational interpretation only.</p>
+          <button class="btn close-btn" data-close="history-panel">關閉 Close</button>
+        </div>
+      </div>
+
+      <!-- Pause -->
+      <div id="pause-panel" class="screen hidden">
+        <div class="menu-panel">
+          <h2>遊戲暫停 Paused</h2>
+          <div class="menu-buttons">
+            <button id="btn-resume" class="btn btn-primary">繼續 Resume</button>
+            <button id="btn-save" class="btn">儲存進度 Save</button>
+            <button id="btn-pause-settings" class="btn">設定 Settings</button>
+            <button id="btn-quit" class="btn btn-danger">回主選單 Main Menu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="settings-panel" class="screen hidden">
+        <div class="panel-box">
+          <h2>設定 Settings</h2>
+          <div class="settings-grid">
+            <label>主音量 Master Volume<input type="range" id="set-master-vol" min="0" max="100" value="80"></label>
+            <label>音效 SFX Volume<input type="range" id="set-sfx-vol" min="0" max="100" value="80"></label>
+            <label>音樂 Music/Ambience<input type="range" id="set-music-vol" min="0" max="100" value="60"></label>
+            <label>滑鼠靈敏度 Mouse Sensitivity<input type="range" id="set-sensitivity" min="10" max="100" value="50"></label>
+            <label>文字大小 Text Size<input type="range" id="set-text-size" min="80" max="150" value="100"></label>
+            <label>畫質 Graphics Quality
+              <select id="set-quality">
+                <option value="high">高 High</option>
+                <option value="medium" selected>中 Medium</option>
+                <option value="low">低 Low</option>
+              </select>
+            </label>
+            <label class="checkbox-row"><input type="checkbox" id="set-subtitles" checked> 字幕 Subtitles</label>
+            <label class="checkbox-row"><input type="checkbox" id="set-reduced-motion"> 減少鏡頭晃動 Reduce Camera Motion</label>
+            <label class="checkbox-row"><input type="checkbox" id="set-high-contrast"> 高對比提示 High-Contrast Prompts</label>
+            <label class="checkbox-row"><input type="checkbox" id="set-screenshake" checked> 螢幕震動 Screen Shake</label>
+          </div>
+          <button class="btn close-btn" data-close="settings-panel">關閉 Close</button>
+        </div>
+      </div>
+
+      <!-- Mission Complete -->
+      <div id="mission-complete-panel" class="screen hidden">
+        <div class="menu-panel">
+          <h2 id="mission-complete-title">任務完成 Mission Complete</h2>
+          <p id="mission-complete-text"></p>
+          <div id="mission-complete-rewards"></div>
+          <button id="btn-mission-continue" class="btn btn-primary">繼續 Continue</button>
+        </div>
+      </div>
+
+      <!-- Mobile Controls -->
+      <div id="mobile-controls" class="hidden">
+        <div id="joystick-zone" class="joystick-zone">
+          <div id="joystick-base" class="joystick-base">
+            <div id="joystick-thumb" class="joystick-thumb"></div>
+          </div>
+        </div>
+        <div id="look-zone" class="look-zone"></div>
+        <div id="mobile-buttons">
+          <button id="btn-mobile-run" class="mobile-btn">跑 RUN</button>
+          <button id="btn-mobile-interact" class="mobile-btn mobile-btn-large">互動 E</button>
+        </div>
+        <div id="mobile-top-buttons">
+          <button id="btn-mobile-inventory" class="mobile-icon-btn">🎒</button>
+          <button id="btn-mobile-quest" class="mobile-icon-btn">📜</button>
+          <button id="btn-mobile-pause" class="mobile-icon-btn">⏸</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
