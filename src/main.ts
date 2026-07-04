@@ -1,5 +1,6 @@
 import './style.css';
 import { Game } from './core/Game';
+import { installRuntimePatches } from './core/RuntimePatches';
 
 function showFatalError(message: string): void {
   const app = document.getElementById('app');
@@ -36,4 +37,5 @@ async function bootstrap(): Promise<void> {
   }
 }
 
+installRuntimePatches();
 bootstrap();
