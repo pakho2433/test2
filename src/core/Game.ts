@@ -180,7 +180,7 @@ export class Game {
   // ---------------------------------------------------------------------
   private newGame(): void {
     this.saveManager.reset();
-    this.player.setState({ x: 0, y: 0, z: 48, yaw: Math.PI, pitch: 0 });
+    this.player.setState({ x: 0, y: 0, z: 48, yaw: 0, pitch: 0 });
     this.beginPlay();
   }
 

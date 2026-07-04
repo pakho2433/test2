@@ -21,7 +21,7 @@ export interface PlayerState {
 export class PlayerController {
   camera: THREE.PerspectiveCamera;
   position = new THREE.Vector3(0, 0, 48);
-  yaw = Math.PI; // facing south into the city from the gate
+  yaw = 0; // facing south into the city from the gate
   pitch = 0;
   radius = 0.42;
   eyeHeight = 1.62;

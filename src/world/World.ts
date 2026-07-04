@@ -122,17 +122,25 @@ export class World {
   }
 
   private buildSkyAndFog(): void {
-    this.scene.background = new THREE.Color(0xbfd9e8);
-    this.scene.fog = new THREE.FogExp2(0xcdd9c6, 0.0075);
+    this.scene.background = new THREE.Color(0xcfe0e8);
+    this.scene.fog = new THREE.FogExp2(0xcdd9c6, 0.0095);
 
-    const skyGeo = new THREE.SphereGeometry(180, 24, 16);
+    // A large soft-gradient sky dome. Colour is driven by the view angle from
+    // the horizon rather than raw sphere height, which keeps the transition
+    // gentle across the whole visible sky instead of showing a hard band.
+    const skyGeo = new THREE.SphereGeometry(180, 48, 32);
     const colors: number[] = [];
     const pos = skyGeo.attributes.position;
-    const top = new THREE.Color(0x6fa3c9);
-    const horizon = new THREE.Color(0xf3d9a8);
+    const top = new THREE.Color(0x8fb8d8);
+    const horizon = new THREE.Color(0xcfe0e8);
+    const tmp = new THREE.Vector3();
     for (let i = 0; i < pos.count; i++) {
-      const y = pos.getY(i) / 180;
-      const t = THREE.MathUtils.clamp((y + 0.15) / 0.5, 0, 1);
+      tmp.set(pos.getX(i), pos.getY(i), pos.getZ(i)).normalize();
+      // Blend linearly by elevation *angle* (not raw height) so the gradient
+      // rate matches what the eye actually sees on screen — this avoids the
+      // "dome seam" artefact you get from a naive height-based blend.
+      const elevation = Math.asin(THREE.MathUtils.clamp(tmp.y, -1, 1));
+      const t = THREE.MathUtils.clamp(elevation / (Math.PI * 0.32), 0, 1);
       const c = horizon.clone().lerp(top, t);
       colors.push(c.r, c.g, c.b);
     }
