@@ -1,0 +1,21 @@
+{
+  "name": "qingming-riverside",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A living 3D Qingming Riverside ancient Chinese city exploration game.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.2",
+    "vite": "^8.1.3"
+  }
+}
